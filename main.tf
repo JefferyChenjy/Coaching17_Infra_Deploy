@@ -94,10 +94,16 @@ module "ecs" {
   }
 }
 
+module "github-oidc-bootstrap" {
+  source                     = "./github-oidc-bootstrap"
+  github_repository_username = "JefferyChenjy"
+  github_repository_name     = "Coaching17_Infra_Deploy"
+  github_oidc_role_name      = "jeffery-oidc-role-17"
+}
 
 resource "aws_iam_role_policy" "github_oidc_policy" {
   name = "terraform-self-read-policy"
-  role = module.github_oidc_bootstrap.github_oidc_role_name
+  role = module.github-oidc-bootstrap.github_oidc_role_name
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -123,7 +129,7 @@ resource "aws_iam_role_policy" "github_oidc_policy" {
           "iam:ListRolePolicies",
           "iam:ListAttachedRolePolicies"
         ]
-        Resource = module.github_oidc_bootstrap.github_oidc_role_arn
+        Resource = module.github-oidc-bootstrap.github_oidc_role_arn
       }
     ]
   })
@@ -131,5 +137,5 @@ resource "aws_iam_role_policy" "github_oidc_policy" {
 }
 
 output "github_oidc_role_arn" {
-  value = module.github_oidc_bootstrap.github_oidc_role_arn
+  value = module.github-oidc-bootstrap.github_oidc_role_arn
 }
