@@ -103,7 +103,8 @@ module "ecs" {
 
 resource "aws_iam_role_policy" "github_oidc_policy" {
   name = "terraform-self-read-policy"
-  role = module.github-oidc-bootstrap.github_oidc_role_name
+  # role = module.github-oidc-bootstrap.github_oidc_role_name
+  role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role-17"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -129,7 +130,7 @@ resource "aws_iam_role_policy" "github_oidc_policy" {
           "iam:ListRolePolicies",
           "iam:ListAttachedRolePolicies"
         ]
-        Resource = module.github-oidc-bootstrap.github_oidc_role_arn
+        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role-17"
       }
     ]
   })
