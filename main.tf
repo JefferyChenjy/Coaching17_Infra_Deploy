@@ -88,7 +88,7 @@ module "ecs" {
       }
       assign_public_ip                   = true
       deployment_minimum_healthy_percent = 100
-      subnet_ids                         = ["subnet-00b4c98869b996d86", "subnet-07fe08d5909e677db"] #List of subnet IDs to use for your tasks
+      subnet_ids                         = [data.aws_subnet.ecs.id] #List of subnet IDs to use for your tasks
       security_group_ids                 = [aws_security_group.ecs.id]
     }
   }
