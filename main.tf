@@ -138,5 +138,5 @@ resource "aws_iam_role_policy" "github_oidc_policy" {
 }
 
 output "github_oidc_role_arn" {
-  value = module.github-oidc-bootstrap.github_oidc_role_arn
+  value = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role-17"
 }
