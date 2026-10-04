@@ -94,12 +94,12 @@ module "ecs" {
   }
 }
 
-module "github-oidc-bootstrap" {
-  source                     = "./github-oidc-bootstrap"
-  github_repository_username = "JefferyChenjy"
-  github_repository_name     = "Coaching17_Infra_Deploy"
-  github_oidc_role_name      = "jeffery-oidc-role-17"
-}
+# module "github-oidc-bootstrap" {
+#   source                     = "./github-oidc-bootstrap"
+#   github_repository_username = "JefferyChenjy"
+#   github_repository_name     = "Coaching17_Infra_Deploy"
+#   github_oidc_role_name      = "jeffery-oidc-role-17"
+# }
 
 resource "aws_iam_role_policy" "github_oidc_policy" {
   name = "terraform-self-read-policy"
