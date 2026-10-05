@@ -96,7 +96,6 @@ module "ecs" {
 
 resource "aws_iam_role_policy" "github_oidc_policy" {
   name = "terraform-self-read-policy"
-  # role = module.github-oidc-bootstrap.github_oidc_role_name
   role = "jeffery-oidc-role-17"
 
   policy = jsonencode({
