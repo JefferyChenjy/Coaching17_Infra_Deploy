@@ -29,6 +29,7 @@ locals {
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 data "aws_subnet" "ecs" {
   id = "subnet-07fe08d5909e677db" # Change to your subnet ID 00b4c98869b996d86
