@@ -31,7 +31,7 @@ locals {
 data "aws_caller_identity" "current" {}
 
 data "aws_subnet" "ecs" {
-  id = "subnet-00b4c98869b996d86"
+  id = "subnet-07fe08d5909e677db" # Change to your subnet ID 00b4c98869b996d86
 }
 
 resource "aws_security_group" "ecs" {
@@ -96,7 +96,7 @@ module "ecs" {
 
 resource "aws_iam_role_policy" "github_oidc_policy" {
   name = "terraform-self-read-policy"
-  role = "jeffery-oidc-role-17"
+  role = "jeffery-oidc-role" # Change to your role name
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -122,7 +122,7 @@ resource "aws_iam_role_policy" "github_oidc_policy" {
           "iam:ListRolePolicies",
           "iam:ListAttachedRolePolicies"
         ]
-        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role-17"
+        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role" # Change to your role name
       }
     ]
   })
