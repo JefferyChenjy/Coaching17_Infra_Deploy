@@ -25,7 +25,7 @@ terraform {
 }
 
 locals {
-  name_prefix = "jeffery-coach17"
+  prefix = "jeffery-coach17"
 }
 
 data "aws_caller_identity" "current" {}
@@ -35,7 +35,7 @@ data "aws_subnet" "ecs" {
 }
 
 resource "aws_security_group" "ecs" {
-  name   = "${local.name_prefix}-ecs-sg"
+  name   = "${local.prefix}-ecs-sg"
   vpc_id = data.aws_subnet.ecs.vpc_id
 
   ingress {
@@ -53,31 +53,30 @@ resource "aws_security_group" "ecs" {
   }
 }
 
-resource "aws_ecr_repository" "app" {
-  name                 = "${local.name_prefix}-private-repo"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true # lets's terraform destroy to remove it even if it holds the images
+
+
+
+
+resource "aws_ecr_repository" "ecr" {
+  name         = "${local.prefix}-ecr"
+  force_delete = true
 }
 
 module "ecs" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "~> 7.5.0"
 
-  cluster_name               = "${local.name_prefix}-ecs-cluster"
+  cluster_name = "${local.prefix}-ecs"
   cluster_capacity_providers = ["FARGATE"]
 
   services = {
-    jeffery-task-def = { #task definition and service name -> #Change
-      runtime_platform = {
-        operating_system_family = "LINUX"
-        cpu_architecture        = "ARM64"
-      }
+    YOUR-TASKDEFINITION-NAME = { #task definition and service name -> #Change
       cpu    = 512
       memory = 1024
       container_definitions = {
-        jeffery-flask-container = { #container name -> Change
+        YOUR-CONTAINER-NAME = { #container name -> Change
           essential = true
-          image     = "${aws_ecr_repository.app.repository_url}:latest"
+          image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${local.prefix}-ecr:latest"
           port_mappings = [
             {
               containerPort = 8080
@@ -88,43 +87,8 @@ module "ecs" {
       }
       assign_public_ip                   = true
       deployment_minimum_healthy_percent = 100
-      subnet_ids                         = [data.aws_subnet.ecs.id] #List of subnet IDs to use for your tasks
-      security_group_ids                 = [aws_security_group.ecs.id]
+      subnet_ids                   = [data.aws_subnet.ecs.id] #List of subnet IDs to use for your tasks
+      security_group_ids           = [aws_security_group.ecs.id] #Create a SG resource and pass it here
     }
   }
-}
-
-resource "aws_iam_role_policy" "github_oidc_policy" {
-  name = "terraform-self-read-policy"
-  role = "jeffery-oidc-role" # Change to your role name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid      = "OidcProviderList"
-        Effect   = "Allow"
-        Action   = "iam:ListOpenIDConnectProviders"
-        Resource = "*"
-      },
-      {
-        Sid      = "OidcProviderRead"
-        Effect   = "Allow"
-        Action   = "iam:GetOpenIDConnectProvider"
-        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
-      },
-      {
-        Sid    = "GithubOidcRoleRead"
-        Effect = "Allow"
-        Action = [
-          "iam:GetRole",
-          "iam:GetRolePolicy",
-          "iam:ListRolePolicies",
-          "iam:ListAttachedRolePolicies"
-        ]
-        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/jeffery-oidc-role" # Change to your role name
-      }
-    ]
-  })
-
 }
