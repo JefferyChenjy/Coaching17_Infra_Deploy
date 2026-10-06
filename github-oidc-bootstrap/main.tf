@@ -30,6 +30,12 @@ resource "aws_iam_role_policy_attachment" "s3_full" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "oidc_ec2_full_access" {
+  role       = aws_iam_role.github_oidc.name # Replace with your role resource name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
+
+
 variable "github_repository_username" {
   description = "GitHub repository username"
   type        = string
