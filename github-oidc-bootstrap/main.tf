@@ -25,15 +25,20 @@ resource "aws_iam_role" "github_oidc" {
   assume_role_policy = data.aws_iam_policy_document.github_trust.json
 }
 
-resource "aws_iam_role_policy_attachment" "s3_full" {
+resource "aws_iam_role_policy_attachment" "oidc_policies" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess",
+    "arn:aws:iam::aws:policy/AmazonECS_FullAccess",
+  ])
+
   role       = aws_iam_role.github_oidc.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  policy_arn = each.value
 }
 
-resource "aws_iam_role_policy_attachment" "oidc_ec2_full_access" {
-  role       = aws_iam_role.github_oidc.name # Replace with your role resource name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
-}
 
 
 variable "github_repository_username" {
